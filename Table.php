@@ -4,6 +4,7 @@ require_once('Link.php');
 class Table{
 
     public $tblName;
+    public $name;
     private $conn;
     public $links = array();
     public $columns = array();
@@ -12,6 +13,7 @@ class Table{
     public function __construct($tbl, $conn){
         $this->tblName = $tbl;
         $this->conn = $conn;
+        $this->name = $tbl;
 
         //$res = $this->get(["*"], "1", "1");
         $res = $this->getColumns();
@@ -38,6 +40,18 @@ class Table{
         $resp = mysqli_query($conn, "SHOW TABLES");
             
         return $resp;
+    }
+
+    public static function getDBs($conn){
+        $resp = mysqli_query($conn, "SHOW DATABASES");
+            
+        return $resp;
+    }
+
+    public static function getDB($conn){
+        $resp = mysqli_query($conn, "SELECT DATABASE() as DB");
+            
+        return mysqli_fetch_assoc($resp);
     }
 
     public function getColumns(){
@@ -280,7 +294,36 @@ class Table{
         $res =  mysqli_query($this->conn, $sql);
     }
 
+    public function add($data)
+    {
+        header('Content-Type: text/html; charset=utf-8');
+        $sql = "INSERT INTO $this->tblName(";
+        $sql .= implode(", ", $this->columns);
+        $sql = str_replace("id, ", "", $sql);
+        $sql = rtrim($sql, ",");
+        $sql .= ") VALUES (";
+
+        foreach ($this->columns as $key => $value) {
+            if($value != "id")
+            $sql .=  (isset($data[$value]) ? "'".$data[$value]."'" : "NULL").", ";
+        }
+        $sql = rtrim($sql, ", ");
+        $sql .= ")";
+
+        // echo $sql;
+
+        mysqli_set_charset($this->conn, "utf8");
+        mysqli_query($this->conn, "SET NAMES 'utf8'");
+        mysqli_query($this->conn, "SET CHARACTER SET 'utf8'");
+        $res = mysqli_query($this->conn, $sql);
+
+        if($res)
+            echo "Položka přidána.";
+        else 
+            echo "Error - Položka nebyla přidáná. Zkuste to prosím znovu.";
+    }
+
 }
 
-
+// Elektrikář - slaboproudá a silnoproudá zařízení
 ?>

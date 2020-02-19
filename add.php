@@ -1,10 +1,15 @@
 <?php  
 require_once "links.php";
+require_once "year.php";
 ?>
 
 
-<form class="addEdit" action="">
-    <h2>Novy zaznam - <?php echo $table->tblName; ?></h2>
+<form class="addEdit" action="save.php" target="_blank">
+    <h2>
+    <?php 
+        echo "Nový Záznam -  $table->name"; 
+    ?>
+    </h2>
 
 <?php
     foreach ($table->columns as $key) {
@@ -19,16 +24,28 @@ require_once "links.php";
             {
                 echo "<span>$key: <input type=\"";
                 
-                if($type == "int")
+                if($key == "email")
+                    echo "email";
+                else if($key == "telefon")
+                    echo "tel";
+                else if($type == "int")
                     echo "number";
                 else if($type == "text")
                     echo "text";
                 else if($type == "year")
-                     echo "number\" min=\"1000\" max=\"9999\"";
+                    echo "hidden\" disabled min=\"1000\" max=\"9999\"";
                 else 
                     echo "text";
                 
-                echo "\" name=\"$table->tblName.$key\"></span>";
+                echo "\" name=\"$key\">";
+                
+                if($type == "year")
+                    selectYear($key);
+                
+                echo "</span>";
+
+
+
             }
 
         }
@@ -38,9 +55,9 @@ require_once "links.php";
 
             $res = $lkTable->getAllLinked(["*"]);
             echo "<span>$key: ";
-            echo "<select name=\"$isLinked\">";
+            echo "<select name=\"$key\">";
             foreach ($res as $option) {
-                echo "<option name=\"".$option["id"]."\">";
+                echo "<option value=\"".$option["id"]."\">";
                 // echo $option["id"]." - ";
                 foreach ($lkTable->showColumns as $c => $value) {
                     echo $option[$value].($value == "id" ?  " - " : " ");
@@ -52,7 +69,10 @@ require_once "links.php";
             
         }
     }
+
 ?>
 
-
+<span><input class="btn btnReset" type="reset" value="Reset"/><input class="btn btnSave" type="submit" value="Uložit"/></span>
 </form>
+
+<div class="response"></div>

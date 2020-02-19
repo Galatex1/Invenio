@@ -123,5 +123,47 @@ $(document).ready(function(){
         });
     })
 
+    $(document).on('click', ".btnSave", (e)=>{
+        e.preventDefault();
+        var ajaxurl = 'save.php',
+        data = $('.addEdit').serialize();
 
+        $.post(ajaxurl, data, function (response) {
+            $(".response").fadeIn(500).removeClass("error");
+            $(".response").html(response);
+
+            if(response.includes("Error - "))
+                $(".response").addClass("error");
+            // else
+            //     $(".btnReset").trigger('click');
+
+            setTimeout(() => {
+                $(".response").fadeOut(500)
+            }, 2000);
+
+            //alert(response);          
+        });
+    })
+
+    $(document).on('click', ".btnSettings", (e)=>{
+        e.preventDefault();
+        var ajaxurl = 'settings.php',
+        data;
+
+        $.post(ajaxurl, data, function (response) {
+            $(".data-container").html(response);
+            //alert(response);          
+        });
+    })
+
+    $(document).on('click', ".btnNapoveda", (e)=>{
+        e.preventDefault();
+        var ajaxurl = 'napoveda.php',
+        data;
+
+        $.post(ajaxurl, data, function (response) {
+            $(".data-container").html(response);
+            //alert(response);          
+        });
+    })
 });

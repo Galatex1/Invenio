@@ -91,7 +91,7 @@ while($row = mysqli_fetch_assoc($res))
         echo "<td style=\"white-space:nowrap;\">";
         if(isset($row["$table->tblName.id"]))
         {
-            echo "<button class=\"btn btnDel\" title=\"Smazat zaznam.\" value=\"".$row["$table->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnEdit\" title=\"Upravit zaznam.\" value=\"".$row["$table->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button>";
+            echo "<button class=\"btn btnDel\" title=\"Smazat zaznam\" value=\"".$row["$table->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnEdit\" title=\"Upravit zaznam\" value=\"".$row["$table->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button>";
         }
         else {
             echo "<center title=\"Chcete li upravovat nebo mazat, vyberte i policko ID.\"><span>?</span></center>";

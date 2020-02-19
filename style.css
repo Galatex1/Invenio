@@ -11,7 +11,7 @@ body{
     box-sizing: border-box;
     display: grid;
     grid-template-columns: 1fr 5fr;
-    grid-template-rows: 5% 95%;
+    grid-template-rows: min-content 1fr;
     overflow: hidden;
     grid-template-areas: 
     "top top"
@@ -121,6 +121,16 @@ form{
     /* border-bottom: 1px dashed #222; */
 }
 
+a, a:visited{
+    color: #ffc600;
+    cursor: pointer;
+}
+
+a:hover{
+    color: #ff4800;
+    text-decoration: underline;
+}
+
 header{
     grid-area: top;
     display: grid;
@@ -130,11 +140,33 @@ header{
     background: #163042;
     box-sizing: border-box;
     border-bottom: 1px solid #0d3a58;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: min-content 1fr min-content min-content min-content min-content min-content;
+    grid-column-gap: 20px;
 }
 
 header .btn{
     justify-self: flex-end;
+    white-space: nowrap;
+}
+
+header h1{
+    display: grid;
+    grid-template-columns: min-content min-content;
+    align-items: center;
+    cursor: pointer;
+}
+
+header h3{
+    white-space: nowrap;
+}
+header .icon{
+    height: 30px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
+#tbls{
+    white-space: nowrap;
 }
 
 .btn{
@@ -361,9 +393,10 @@ center[title] span{
     display: grid;
     grid-template-columns: 200px 1fr;
     align-items: center;
+    grid-column-gap: 5px;
 }
 
-.addEdit input[type=text], .addEdit input[type=number], .addEdit select, .addEdit option{
+.addEdit input[type=text], .addEdit input[type=number], .addEdit input[type=email], .addEdit input[type=tel], .addEdit select, .addEdit option{
     background: #15232d;
     color: #ffc600;
     border: 1px solid #0d3a58;
@@ -374,4 +407,82 @@ center[title] span{
 
 .addEdit span{
     text-transform: capitalize;
+}
+
+.btnSave{
+    background: #15232d;
+    border: 2px solid #15232d;
+    display: block;
+    width: 30%;
+    justify-self: left;
+}
+
+.btnReset{
+    background: #15232d;
+    border: 2px solid #15232d;
+    display: block;
+    color: orangered;
+    width: 100%;
+    justify-self: left;
+}
+
+.btnReset:hover{
+    border-bottom: 2px solid orangered;
+}
+
+#table{
+    font-size: 15px;
+}
+
+.btnNew, .btnSettings{
+    word-wrap: none;
+    white-space: nowrap;
+}
+
+.btnSettings{
+    padding: 3px 5px;
+}
+
+.btnSettings img{
+    height: 26px;
+    vertical-align: middle;
+    
+}
+
+.response{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px 40px;
+    border: 2px solid #15232d;
+    border-bottom: 2px solid greenyellow;
+    background: #122738;
+    border-radius: 5px;
+    display: none;
+}
+
+.response.error{
+    border-bottom: 2px solid orangered;
+}
+
+.napoveda{
+    font-size: 14px;
+    letter-spacing: 0.04em;
+}
+
+.napoveda .sub{
+    font-size: 2px !important;
+}
+
+.copyright{
+    justify-self: flex-end;
+    align-self: flex-end;
+    font-size: 14px;
+    cursor: pointer;
+    color: #ffffff07;
+}
+
+.copyright:hover{
+    color: #ffc60022
 }
