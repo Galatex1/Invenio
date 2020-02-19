@@ -169,6 +169,11 @@ header .icon{
     white-space: nowrap;
 }
 
+#tbls img{
+    vertical-align: middle;
+    height: 25px;
+}
+
 .btn{
     background: #193549;
     color: inherit;
@@ -486,3 +491,4 @@ center[title] span{
 .copyright:hover{
     color: #ffc60022
 }
+

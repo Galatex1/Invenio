@@ -34,7 +34,7 @@
         <h3>MySQL klient by Galatex</h3>
         <span>
             <form id="tbls" action="" method="post">
-                <span>Databáze: </span> 
+                <span><!-- Databáze: --><img src="DB.png" alt="Databáze" title="Databáze"></span> 
                 <select name="DB" id="DB" class="DB">
                     <?php $selected = end(Table::getDB($conn)); print_r(end($selected)); ?>
                     <?php foreach (Table::getDBs($conn) as $key => $value): ?>                  
@@ -46,7 +46,7 @@
         </span>
         <span>
             <form id="tbls" action="" method="post">
-                <span>Tabulka: </span> 
+                <span><!-- Tabulka:  --><img src="table.png" alt="Tabulka" title="Tabulka"> </span> 
                 <select name="table" id="table" class="table">
                     
                     <?php foreach (Table::getTables($conn) as $key => $value): ?>
