@@ -66,6 +66,7 @@
     <form id="filtering" action="" method="get" style="margin:auto;">
         <div class="columns">
             <div class="form">
+                <h3 style="margin-top: 0px;">Sloupce</h3>
                 <ul id="main">
                 <?php
 
