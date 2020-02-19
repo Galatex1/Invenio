@@ -1,5 +1,7 @@
 <?php
 require_once "links.php";
+
+if(session_status() !== PHP_SESSION_ACTIVE)
 session_start();
 
 $cols = array();
@@ -53,7 +55,7 @@ foreach ($_POST as $key => $value) {
 }
 
 //  echo makeFilters();
-$res = $zak->getAllLinked($cols,  makeFilters());
+$res = $table->getAllLinked($cols,  makeFilters());
 
 $first = true;
 
@@ -78,7 +80,7 @@ while($row = mysqli_fetch_assoc($res))
 
     
     echo "<tr>";
-        echo "<td style=\"white-space:nowrap;\"><button class=\"btn btnDel\" values=\"".$row["$zak->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnDel\" values=\"".$row["$zak->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button></td>";
+        echo "<td style=\"white-space:nowrap;\"><button class=\"btn btnDel\" values=\"".$row["$table->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnDel\" values=\"".$row["$table->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button></td>";
     foreach ($row as $key => $value) {
         echo "<td style=\"white-space:nowrap;\">$value</td>";
     }

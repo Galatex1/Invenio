@@ -18,18 +18,30 @@
 session_start();
 require_once "links.php";
 
+if(isset($_POST["table"]) && $_POST["table"] != "")
+{
+    $table = $tables[$_POST["table"]];
+    $_SESSION['table'] = $_POST["table"];
+}
+
+
 ?>
 
 <header>
     
     <span>
-        <span>Tabulka:</span> 
-        <select name="table" id="table">
-            <?php foreach (Table::getTables($conn) as $key => $value): ?>
-            
-            <option value="<?php echo end($value); ?>"><?php echo end($value); ?></option>
-            <?php endforeach; ?>
-        </select>
+        
+        <form id="tbls" action="" method="post">
+            <span>Tabulka: </span> 
+            <select name="table" id="table" class="table">
+                
+                <?php foreach (Table::getTables($conn) as $key => $value): ?>
+                
+                <option value="<?php echo end($value); ?>"  <?php echo $table->tblName == end($value) ? "selected" : "";   ?>  ><?php echo end($value); ?></option>
+                <?php endforeach; ?>
+                
+            </select>
+        </form>
     </span>
        
     <button class="btn"> <big>+</big> Novy Zaznam</button>
@@ -41,11 +53,11 @@ require_once "links.php";
             <ul id="main">
             <?php
 
-                // echo "<legend>".$zak->tblName."</legend>";
+                // echo "<legend>".$table->tblName."</legend>";
 
-                foreach ($zak->columns as $key) {
+                foreach ($table->columns as $key) {
 
-                    $isLinked = $zak->isLinked($key);
+                    $isLinked = $table->isLinked($key);
 
                     if($isLinked === false)
                     {
@@ -55,7 +67,7 @@ require_once "links.php";
                         echo "<li>";
                         echo "<span class=\"caret\"><input type=\"checkbox\" name=\"$key\" id=\"$key\" checked/> $key</span>";
                         echo "<ul class=\"nested\">";
-                        foreach ($zak->links[$isLinked]->linkedTbl->columns as $cl) {
+                        foreach ($table->links[$isLinked]->linkedTbl->columns as $cl) {
                             echo "<li class=\"chkBox\" style=\"white-space:nowrap;\"><input type=\"checkbox\" name=\"$isLinked.$cl\" id=\"$cl\" checked/> $cl</li> ";
                         }
                         echo "</ul></li>";
@@ -76,7 +88,7 @@ require_once "links.php";
             <!-- <div>WHERE</div> -->
 
         </div>
-        <input class="btn btnSend" type="submit" value="odeslat" name="odeslat">
+        <input class="btn btnSend" type="submit" value="obnovit" name="odeslat">
     </div>
 </form>
 
@@ -103,17 +115,17 @@ require_once "links.php";
 
 // $sql .= " FROM zak JOIN ucitele ON zak.ucitel = ucitele.id JOIN tridy ON zak.trida = tridy.id JOIN obor ON obor.id = zak.obor";
 
-// // $resp2 = $zak->getAllLinked(["*"], 
+// // $resp2 = $table->getAllLinked(["*"], 
 // // [
 // //     ["id","jmeno", "prijmeni"],
 // //     ["nazev", "zkratka", "popis"],
 // //     ["nazev", "zacatek"]
 // // ], ["ucitele", "obor", "tridy"], ["ucitel", "obor", "trida"], ["id", "id", "id"], "1", "1");
 
-// $resp2 = $zak->getAllLinked($cols,  "1");
+// $resp2 = $table->getAllLinked($cols,  "1");
 
 
-// //$resp2 = $zak->getAllLinked(["jmeno", "prijmeni", "ucitele.jmeno", "ucitele.prijmeni"],  "1", "1");
+// //$resp2 = $table->getAllLinked(["jmeno", "prijmeni", "ucitele.jmeno", "ucitele.prijmeni"],  "1", "1");
 
 ?>
 

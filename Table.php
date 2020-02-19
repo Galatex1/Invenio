@@ -8,6 +8,23 @@ class Table{
     public $links = array();
     public $columns = array();
 
+    public function __construct($tbl, $conn){
+        $this->tblName = $tbl;
+        $this->conn = $conn;
+
+        //$res = $this->get(["*"], "1", "1");
+        $res = $this->getColumns();
+        while($row = mysqli_fetch_assoc($res))
+        {       
+            // foreach ($row as $key => $value) {
+                
+            // }    
+            
+            $this->columns[] = $row['Field'];
+        }
+
+    }
+
 
     public static function getTables($conn){
         $resp = mysqli_query($conn, "SHOW TABLES");
@@ -15,19 +32,10 @@ class Table{
         return $resp;
     }
 
-
-    public function __construct($tbl, $conn){
-        $this->tblName = $tbl;
-        $this->conn = $conn;
-
-        $res = $this->get(["*"], "1", "1");
-        while($row = mysqli_fetch_array($res, 1))
-        {       
-            foreach ($row as $key => $value) {
-                $this->columns[] = $key;
-            }         
-        }
-
+    public function getColumns(){
+        $resp = mysqli_query($this->conn, "SHOW COLUMNS FROM $this->tblName");
+            
+        return $resp;
     }
 
 
@@ -61,22 +69,22 @@ class Table{
         return $resp;
     }
 
-    public function getLinked($columns, $columnsLinked, $linkedTbl, $link, $linkTo, $filter = "1", $limit = "0, 1000000")
-    {
-        $sql = "SELECT ";
-        foreach ($columns as $key => $col) {
-            if($col != "id")
-                $sql .= "$this->tblName.$col, "; 
-        }
-        foreach ($columnsLinked as $key => $col) {
-            $sql .= "$linkedTbl.$col AS '$linkedTbl"."."."$col', "; 
-        }
+    // public function getLinked($columns, $columnsLinked, $linkedTbl, $link, $linkTo, $filter = "1", $limit = "0, 1000000")
+    // {
+    //     $sql = "SELECT ";
+    //     foreach ($columns as $key => $col) {
+    //         // if($col != "id")
+    //             $sql .= "$this->tblName.$col, "; 
+    //     }
+    //     foreach ($columnsLinked as $key => $col) {
+    //         $sql .= "$linkedTbl.$col AS '$linkedTbl"."."."$col', "; 
+    //     }
         
-        $sql .=" $this->tblName.id FROM $this->tblName JOIN $linkedTbl ON $this->tblName.$link = $linkedTbl.$linkTo WHERE $filter LIMIT $limit";
+    //     $sql .=" $this->tblName.id FROM $this->tblName JOIN $linkedTbl ON $this->tblName.$link = $linkedTbl.$linkTo WHERE $filter LIMIT $limit";
         
-        $resp = mysqli_query($this->conn, $sql);   
-        return $resp;
-    }
+    //     $resp = mysqli_query($this->conn, $sql);   
+    //     return $resp;
+    // }
 
     public function findColumnTable($col)
     {
@@ -147,12 +155,14 @@ class Table{
 
                $sql .= "$tbl.$col AS '$tbl.$col', ";
 
-
                if(!in_array($tbl, $linked))
                {
-                    $ln = $this->links[$tbl];
-                    $join .= " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
-                    $linked[] = $tbl;
+                    if(array_key_exists($tbl, $this->links))
+                    {
+                        $ln = $this->links[$tbl];
+                        $join .= " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
+                        $linked[] = $tbl;
+                    }
                }
 
             }

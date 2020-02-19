@@ -79,4 +79,11 @@ $(document).ready(function(){
     }
 
 
+    $(document).on("change", "header .table", () =>{
+        //e.preventDefault();
+        //alert("hello");
+        $("#tbls").submit();
+    })
+
+
 });
