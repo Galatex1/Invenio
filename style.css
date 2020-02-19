@@ -165,11 +165,11 @@ header .icon{
     margin-right: 10px;
 }
 
-#tbls{
+.tbls{
     white-space: nowrap;
 }
 
-#tbls img{
+.tbls img{
     vertical-align: middle;
     height: 25px;
 }

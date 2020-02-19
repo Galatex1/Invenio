@@ -33,7 +33,7 @@
         <h1><img class="icon" src="icon.png"> ABSOLVENT</h1>
         <h3>MySQL klient by Galatex</h3>
         <span>
-            <form id="tbls" action="" method="post">
+            <form class="tbls" action="" method="post">
                 <span><!-- Databáze: --><img src="DB.png" alt="Databáze" title="Databáze"></span> 
                 <select name="DB" id="DB" class="DB">
                     <?php $selected = end(Table::getDB($conn)); print_r(end($selected)); ?>
@@ -45,7 +45,7 @@
             </form>
         </span>
         <span>
-            <form id="tbls" action="" method="post">
+            <form class="tbls" id="tbls" action="" method="post">
                 <span><!-- Tabulka:  --><img src="table.png" alt="Tabulka" title="Tabulka"> </span> 
                 <select name="table" id="table" class="table">
                     
