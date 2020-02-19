@@ -17,12 +17,16 @@ if($conn)
 
 
 $ucitel = new Table("ucitele", $conn);
+$ucitel->showColumns = ['jmeno', 'prijmeni'];
+
 $obor = new Table("obor", $conn);
+$obor->showColumns = ['zkratka', 'nazev', 'popis'];
+
 $tridy = new Table("tridy", $conn);
+$tridy->showColumns = ['nazev', 'zacatek'];
 $tridy->makeLink($ucitel, "ucitel", "id");
 
 $zak = new Table("zak", $conn);
-// $zak->makeLinks([$ucitel, $obor/* , $tridy */], ["ucitel", "obor"/* , "trida" */], ["id", "id"/* , "id" */]);
 $zak->makeLink($tridy, "trida", "id");
 $zak->makeLink($obor, "obor", "id");
 

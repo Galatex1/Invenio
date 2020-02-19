@@ -7,6 +7,7 @@ class Table{
     private $conn;
     public $links = array();
     public $columns = array();
+    public $showColumns = [];
 
     public function __construct($tbl, $conn){
         $this->tblName = $tbl;
@@ -23,8 +24,15 @@ class Table{
             $this->columns[] = $row['Field'];
         }
 
+        $this->showColumns = $this->columns;
     }
 
+
+    public function getColumnType($col)
+    {       
+     $resp = mysqli_query($this->conn, "SELECT DATA_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$this->tblName' AND COLUMN_NAME = '$col'");         
+     return $resp;
+    }
 
     public static function getTables($conn){
         $resp = mysqli_query($conn, "SHOW TABLES");
@@ -69,23 +77,6 @@ class Table{
         return $resp;
     }
 
-    // public function getLinked($columns, $columnsLinked, $linkedTbl, $link, $linkTo, $filter = "1", $limit = "0, 1000000")
-    // {
-    //     $sql = "SELECT ";
-    //     foreach ($columns as $key => $col) {
-    //         // if($col != "id")
-    //             $sql .= "$this->tblName.$col, "; 
-    //     }
-    //     foreach ($columnsLinked as $key => $col) {
-    //         $sql .= "$linkedTbl.$col AS '$linkedTbl"."."."$col', "; 
-    //     }
-        
-    //     $sql .=" $this->tblName.id FROM $this->tblName JOIN $linkedTbl ON $this->tblName.$link = $linkedTbl.$linkTo WHERE $filter LIMIT $limit";
-        
-    //     $resp = mysqli_query($this->conn, $sql);   
-    //     return $resp;
-    // }
-
     public function findColumnTable($col)
     {
         if(in_array($col, $this->columns))
@@ -129,8 +120,8 @@ class Table{
  
                     if(!in_array($tbl, $linked))
                     {
-                        $ln = $this->links[$tbl];
-                        $join .= " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
+                        list($tbl, $jn) = $this->findJoin($tbl);
+                        $join .= $jn;
                         $linked[] = $tbl;
                     }
                     
@@ -142,8 +133,13 @@ class Table{
             {    
 
                 $tbl = $this->findColumnTable($col);
-
-                if(strpos($col, "."))
+                $skip = false;
+                if(strpos($col, ":"))
+                {                
+                    list($tbl, $col) = explode(":", $col);
+                    $skip = true;                          
+                }
+                else if(strpos($col, "."))
                 {
                     list($tbl, $col) = explode(".", $col);            
                 }
@@ -151,18 +147,18 @@ class Table{
                 {                  
                     list($tbl, $col) = explode("_", $col);                          
                 }
-                
 
-               $sql .= "$tbl.$col AS '$tbl.$col', ";
+                
+                if($skip === false)
+                {
+                    $sql .= "$tbl.$col AS '$tbl.$col', ";
+                }
 
                if(!in_array($tbl, $linked))
                {
-                    if(array_key_exists($tbl, $this->links))
-                    {
-                        $ln = $this->links[$tbl];
-                        $join .= " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
-                        $linked[] = $tbl;
-                    }
+                    list($tbl, $jn) = $this->findJoin($tbl);
+                    $join .= $jn;
+                    $linked[] = $tbl;
                }
 
             }
@@ -178,11 +174,110 @@ class Table{
         
         $sql .= " WHERE $filter LIMIT $limit";
 
-        //  echo $sql."<br>";
+        //echo $sql."<br>";
     
 
         $resp = mysqli_query($this->conn, $sql);   
         return $resp;
+    }
+
+
+    public function findJoin($tbl)
+    {
+        $join = "";
+        $addLink = "";
+
+        if(array_key_exists($tbl, $this->links))
+        {
+            $ln = $this->links[$tbl];
+            $join = " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
+            $addLink = $tbl;
+        }
+        else {
+            foreach ($this->links as $key => $ln) {
+                list($addLink, $join) =   $ln->linkedTbl->findJoin($tbl);
+                if($join != "" && $addLink != "")
+                    break;
+            }       
+        }
+
+        return [$addLink, $join];
+    }
+
+
+    public function getStructure(array &$structure)
+    {
+        foreach ($this->columns as $key) {
+
+            $isLinked = $this->isLinked($key);
+
+            if($isLinked === false)
+            {
+                $structure[$key] = $this->tblName; 
+            }
+            else {
+
+                // foreach (->linkedTbl->columns as $cl) {
+                    
+                // }
+
+                $table = $this->links[$isLinked]->linkedTbl;
+                $structure[$key] = array();
+                $table->getStructure($structure[$key]);
+                
+            }
+        }
+    }
+
+    public static function makeTreeView(array $structure, &$html)
+    {
+        $prev = "";
+        foreach ($structure as $key => $value) {
+            
+            if(!is_array($value))
+            {
+                $html .= "<li class=\"chkBox\" style=\"white-space:nowrap;\"><input type=\"checkbox\" name=\"$value.$key\" id=\"$value.$key\" checked/>$key</li> ";
+                $prev = $value;
+            }
+            else {
+                $html .=  "<li class=\"nest\">";
+                // form=\"dummy\"
+                $html .=  "<span class=\"caret\"><input type=\"checkbox\" name=\"$prev:$key\" id=\"$prev:$key\" checked  />$key</span>";
+                $html .=  "<ul class=\"nested\">";
+                Table::makeTreeView($value, $html);
+                $html .=  "</ul></li>";
+            }
+             
+        }
+    }
+
+
+    public function makeFilterList(array $structure, &$html)
+    {
+        foreach ($structure as $key => $value) {
+
+            if(!is_array($value))
+            {
+                //$html .= "<li class=\"chkBox\" style=\"white-space:nowrap;\"><input type=\"checkbox\" name=\"$value.$key\" id=\"$value.$key\" checked/>$key</li> ";
+
+                $html .= "<option value=\"$value.$key\">";
+                $html .= "$value.$key";
+                $html .= "</option>";
+
+            }
+            else {
+
+                $this->makeFilterList($value, $html);
+                
+            }
+            
+        }
+    }
+
+    public function delete($id)
+    {
+        $sql = "DELETE FROM $this->tblName WHERE id=$id ";
+        $res =  mysqli_query($this->conn, $sql);
     }
 
 }

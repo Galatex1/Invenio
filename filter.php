@@ -7,30 +7,37 @@ $i = $_POST["filters"];
 <div class="fil">
     <select name="column-<?php echo $i ?>" id="column-<?php echo $i ?>">
     <?php
-        foreach ($table->columns as $key) {
+        // foreach ($table->columns as $key) {
 
             
 
-            $isLinked = $table->isLinked($key);
+        //     $isLinked = $table->isLinked($key);
 
-            if($isLinked === false)
-            {
-                echo "<option value=\"$table->tblName.$key\">";
-                echo $key;
-                echo "</option>";
-            }
-            else {
+        //     if($isLinked === false)
+        //     {
+        //         echo "<option value=\"$table->tblName.$key\">";
+        //         echo $key;
+        //         echo "</option>";
+        //     }
+        //     else {
 
 
-                foreach ($table->links[$isLinked]->linkedTbl->columns as $cl) {
-                    echo "<option value=\"$isLinked.$cl\">";
-                    echo $isLinked.".".$cl;
-                    echo "</option>";
-                }
+        //         foreach ($table->links[$isLinked]->linkedTbl->columns as $cl) {
+        //             echo "<option value=\"$isLinked.$cl\">";
+        //             echo $isLinked.".".$cl;
+        //             echo "</option>";
+        //         }
 
                 
-            }
-        }
+        //     }
+        // }
+        $struct = array();
+        $html = "";
+
+        $table->getStructure($struct);
+        $table->makeFilterList($struct, $html);
+        
+        echo $html;
     ?>
     </select>
     <select name="operand-<?php echo $i ?>" id="operand-<?php echo $i ?>">

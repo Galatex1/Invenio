@@ -38,9 +38,17 @@ function makeFilters()
 }
 
 
+if(isset($_POST['delete']) && $_POST['delete'] !="")
+{
+    $id = $_POST['delete'];
+    $table->delete($id);
+
+}
+
+
 foreach ($_POST as $key => $value) {
 
-    if($key != "odeslat" && strpos($key, "column-") === false && strpos($key, "operand-") === false && strpos($key, "value-") === false && strpos($key, "order") === false)
+    if($key != "odeslat" && $key != "delete" && strpos($key, "join-") === false && strpos($key, "column-") === false && strpos($key, "operand-") === false && strpos($key, "value-") === false && strpos($key, "order") === false)
     {
 
 
@@ -80,7 +88,15 @@ while($row = mysqli_fetch_assoc($res))
 
     
     echo "<tr>";
-        echo "<td style=\"white-space:nowrap;\"><button class=\"btn btnDel\" values=\"".$row["$table->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnDel\" values=\"".$row["$table->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button></td>";
+        echo "<td style=\"white-space:nowrap;\">";
+        if(isset($row["$table->tblName.id"]))
+        {
+            echo "<button class=\"btn btnDel\" title=\"Smazat zaznam.\" value=\"".$row["$table->tblName.id"]."\"><img src=\"delete.png\" height=\"15px\" width=\"15px\"/></button> <button class=\"btn btnEdit\" title=\"Upravit zaznam.\" value=\"".$row["$table->tblName.id"]."\"><img src=\"change.png\" height=\"15px\" width=\"15px\"/></button>";
+        }
+        else {
+            echo "<center title=\"Chcete li upravovat nebo mazat, vyberte i policko ID.\"><span>?</span></center>";
+        }
+        echo "</td>";
     foreach ($row as $key => $value) {
         echo "<td style=\"white-space:nowrap;\">$value</td>";
     }

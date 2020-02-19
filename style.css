@@ -18,7 +18,7 @@ body{
     "left table";
     height: 100vh;
     color: #b1bbc0;
-    
+
 }
 
 th{
@@ -26,8 +26,8 @@ th{
     /* border-right: 1px dashed rgb(255, 255, 255);
     border-left: 1px dashed rgb(255, 255, 255); */
     background: #163042;
-    color: whitesmoke;
-    padding: 7px 10px;
+    color: #ffc600;
+    padding: 7px 5px;
     text-align: left;
     cursor: pointer;
 }
@@ -165,13 +165,13 @@ header .btn{
     border-bottom: 2px solid #ffc600;
 }
 
-.btnDel{
+.btnDel, .btnEdit{
     padding: 3px 3px;
     background: #122738;
     border: 2px solid #122738;
 }
 
-.btnDel:hover{
+.btnDel:hover, .btnEdit:hover{
     background: #193549;
     cursor: pointer;
     /* color: #555; */
@@ -253,6 +253,7 @@ content: /* "\2304"; */ url("arrow.png");
 display: inline-block;
 font-size: 2em;
 margin-right: 6px;
+width: 12px;
 }
   
 /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
@@ -300,7 +301,7 @@ display: block;
      cursor: pointer;
  }
 
- .data-container::-webkit-scrollbar-thumb:hover
+ .data-container::-webkit-scrollbar-thumb:hover, .form::-webkit-scrollbar-thumb:hover, .filter::-webkit-scrollbar-thumb:hover
  {
      background-color: #1b5985;
      cursor: pointer;
@@ -329,4 +330,48 @@ display: block;
  .ASC::after{
     content: " \2191";
     font-size: 16px;
+}
+
+
+/* center[title]{
+    
+} */
+
+center[title] span{
+    color: #ffc600;
+    border-bottom: 1px dotted #ffc600;
+    cursor: pointer;
+}
+
+.deleted{
+    opacity: 0;
+    transition: opacity 0.5s ease-in;
+}
+
+.addEdit{
+    display: grid;
+    grid-template-rows: repeat(30, min-content);
+    grid-row-gap: 5px;
+    width: 70%;
+    margin: auto;
+    align-items: center;
+}
+
+.addEdit span{
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    align-items: center;
+}
+
+.addEdit input[type=text], .addEdit input[type=number], .addEdit select, .addEdit option{
+    background: #15232d;
+    color: #ffc600;
+    border: 1px solid #0d3a58;
+    border-radius: 2px;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.addEdit span{
+    text-transform: capitalize;
 }

@@ -45,8 +45,6 @@ $(document).ready(function(){
 
         data += "&orderDir="+ dir;
 
-        console.log(data);
-
         $.post(ajaxurl, data, function (response) {
             $(".data-container").html(response);
             $(e.target).addClass(dir);
@@ -55,11 +53,17 @@ $(document).ready(function(){
     });
 
     $('.caret input').on('change', (e)=>{
+        $(e.target).closest('li').find('input').prop("checked", $(e.target).prop("checked"));
+    })
 
-        //alert("hello")
-        //console.log(e.target);
-        $(e.target).closest('li').find('.chkBox input').prop("checked", $(e.target).prop("checked"));
-
+    $('input').on('change', (e)=>{
+        console.log($(e.currentTarget).prop("checked"))
+        if($(e.currentTarget).prop("checked") == true)
+        {
+            $(e.currentTarget).closest('.nest').find('span input').eq(0).prop("checked", $(e.currentTarget).prop("checked"));
+            $(e.currentTarget).closest('.nest').parent().closest('.nest').find('span input').eq(0).prop("checked", $(e.currentTarget).prop("checked"));
+            
+        }
     })
 
 
@@ -83,6 +87,40 @@ $(document).ready(function(){
         //e.preventDefault();
         //alert("hello");
         $("#tbls").submit();
+    })
+
+
+    $(document).on('click', '.btnDel', (e)=>{
+
+        e.preventDefault();
+        var ajaxurl = 'getData.php',
+        data =  $("#filtering").serialize();
+        data += "&delete="+$(e.currentTarget).val();
+        console.log(data);
+
+
+        $.post(ajaxurl, data, function (response) {
+            // $(".data-container").html(response);
+            $(e.currentTarget).closest("tr").addClass("deleted");
+            var time = $(".deleted").css('transition-duration').slice(0, -1);
+
+            setTimeout(() => {
+                $(".deleted").remove();
+            }, (time*1000+10));
+
+
+        });
+    })
+
+    $(".btnNew").click((e)=>{
+        e.preventDefault();
+        var ajaxurl = 'add.php',
+        data;
+
+        $.post(ajaxurl, data, function (response) {
+            $(".data-container").html(response);
+            
+        });
     })
 
 
