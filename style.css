@@ -1,0 +1,332 @@
+body, html{
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+body{
+    font-family: monospace;
+    /* padding: 30px 60px 0px 60px; */
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    grid-template-rows: 5% 95%;
+    overflow: hidden;
+    grid-template-areas: 
+    "top top"
+    "left table";
+    height: 100vh;
+    color: #b1bbc0;
+    
+}
+
+th{
+    border: 1px solid #163042;
+    /* border-right: 1px dashed rgb(255, 255, 255);
+    border-left: 1px dashed rgb(255, 255, 255); */
+    background: #163042;
+    color: whitesmoke;
+    padding: 7px 10px;
+    text-align: left;
+    cursor: pointer;
+}
+
+th:first-child{
+    border: 0px solid #555;
+    border-bottom: 1px solid #163042;
+    border-radius: 7px 0px 0px 0px;
+}
+
+th:last-child{
+    border: 0px solid #555;
+    border-radius: 0px 7px 0px 0px;
+}
+
+table{
+    border-collapse: collapse;
+    border-color: white;
+    grid-area: table;
+}
+
+td{
+    border: 1px dashed #163042;
+    border-bottom: 1px solid #163042;
+    padding: 3px 5px;
+}
+
+tr:nth-child(even) td{
+    background: rgba(85, 85, 85, 0.15);
+}
+
+.data-container{
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 20px 20px;
+    background: #193549;
+    color: white;
+}
+
+.columns{   
+    background: #15232d;
+    color: #b1bbc0;
+    grid-area: left;
+    border-right: 1px solid #0d3a58;
+    display: grid;
+    /* align-items: center; */
+    grid-template-rows: 50% auto min-content;
+    box-sizing: border-box;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+}
+
+form{
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.form{
+    display: block;
+    overflow: auto;
+    border-bottom: 1px solid #555; 
+    padding: 20px 0px 20px 20px;
+    box-sizing: border-box;
+}
+
+.filter{
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.btns{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 5px;
+}
+
+.chkBox input, .caret input{
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.chkBox{
+    padding: 2px 0px;
+    /* border-bottom: 1px dashed #222; */
+}
+
+header{
+    grid-area: top;
+    display: grid;
+    padding: 0px 20px;
+    align-items: center;
+    /* justify-items: flex-end; */
+    background: #163042;
+    box-sizing: border-box;
+    border-bottom: 1px solid #0d3a58;
+    grid-template-columns: 1fr 1fr;
+}
+
+header .btn{
+    justify-self: flex-end;
+}
+
+.btn{
+    background: #193549;
+    color: inherit;
+    padding: 7px 15px;
+    border-radius: 3px;
+    border: 0px solid #222;
+    justify-self: center;
+    margin: 5px 0px 5px 0px;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.07em;
+    font-family: monospace;
+    border: 2px solid #193549;
+    /* border-bottom: 2px solid transparent; */
+    
+}
+
+
+
+.btn:hover{
+    background: #122738;
+    cursor: pointer;
+    /* color: #555; */
+    border: 2px solid #122738;
+    border-bottom: 2px solid #ffc600;
+}
+
+.btnDel{
+    padding: 3px 3px;
+    background: #122738;
+    border: 2px solid #122738;
+}
+
+.btnDel:hover{
+    background: #193549;
+    cursor: pointer;
+    /* color: #555; */
+    border: 2px solid #193549;
+    border-bottom: 2px solid #ffc600;
+}
+
+.btnSend{
+    padding: 7px 15px;
+    width: 95%;
+    border-radius: 3px;
+    justify-self: center;
+    margin: 10px 0px 10px 0px;
+    font-size: 15px;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.07em;
+    font-family: monospace;
+}
+
+.btnFilter{
+    width: 100%;
+}
+
+.fil{
+    display: grid;
+    grid-template-columns: 4fr 2fr 4fr;
+    width: 100%;
+    grid-column-gap: 3px;
+    margin-top: 3px;
+    font-size: 10px;
+}
+
+.fil input, .fil select{
+    width: 100%;
+    font-size: 12px;
+}
+
+
+.smallForm{
+    height: initial;
+    display: inline-block;
+}
+
+input, button, select{
+    font-family: monospace;
+}
+
+.template{
+    display: none;
+}
+
+
+/*
+
+TREEVIEW
+
+*/
+
+ul, #main {
+    list-style-type: none;
+  }
+  
+  /* Remove margins and padding from the parent ul */
+  #main {
+    margin: 0;
+    padding: 0;
+  }
+
+/* Style the caret/arrow */
+.caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+}
+  
+  /* Create the caret/arrow with a unicode, and style it */
+.caret::before {
+content: /* "\2304"; */ url("arrow.png");
+display: inline-block;
+font-size: 2em;
+margin-right: 6px;
+}
+  
+/* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+.caret-down::before {
+    content: /* "\2304"; */ url("arrow-down.png");
+
+}
+
+/* Hide the nested list */
+.nested {
+display: none;
+}
+
+/* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+.active {
+display: block;
+}
+
+/*
+ *  SCROLLBAR
+ */
+
+.data-container::-webkit-scrollbar-track
+ {
+     /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+     box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+     border-radius: 0px; */
+     background-color: rgba(245,245,245,0);
+ }
+ 
+ .data-container::-webkit-scrollbar
+ {
+     width: 14px;
+     height: 14px;
+     background-color: rgba(245,245,245,0);
+     cursor: pointer; 
+ }
+ 
+ .data-container::-webkit-scrollbar-thumb
+ {
+     border-radius: 0px;
+     /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+     box-shadow: inset 0 0 6px rgba(0,0,0,.3); */
+     background-color: #1b59856e;
+     cursor: pointer;
+ }
+
+ .data-container::-webkit-scrollbar-thumb:hover
+ {
+     background-color: #1b5985;
+     cursor: pointer;
+ }
+
+
+ input[type=text], input[type=number], select, option{
+     background: #193549;
+     color: #ffc600;
+     border: 1px solid #0d3a58;
+     border-radius: 2px;
+     padding: 3px;
+     box-sizing: border-box;
+ }
+
+ .ASC, .DESC{
+     color: #ffc600;
+ }
+
+ .DESC::after{
+     content: " \2193";
+     font-size: 16px;
+
+ }
+
+ .ASC::after{
+    content: " \2191";
+    font-size: 16px;
+}
