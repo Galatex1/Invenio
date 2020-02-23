@@ -56,7 +56,7 @@
         if(!isset($_SESSION['host']) || $_SESSION['host'] == "")
             require_once "page/connection.php";
         else {
-            include "page/tblInfo.php";          
+            //include "page/tblInfo.php";          
         }
         ?>
         
