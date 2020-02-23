@@ -1,5 +1,5 @@
 <?php  
-require_once "links.php";
+require_once "../links.php";
 
 $i = $_POST["filters"];
 

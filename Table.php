@@ -1,34 +1,95 @@
 <?php
 require_once('Link.php');
 
+
+function contains($string, $substring)
+{
+   return strpos($string, $substring) !== FALSE;
+}
+
+function inArray($string, $array)
+{
+    foreach ($array as $key => $value) {
+        if(strtolower($string) == strtolower($value))
+            return true;
+    }
+
+    return false;
+}
+
 class Table{
 
     public $tblName;
+    public $Db;
     public $name;
     private $conn;
     public $links = array();
     public $columns = array();
     public $showColumns = [];
+    public $primary = [];
+    public $auto_incremented = [];
 
-    public function __construct($tbl, $conn){
+    public function __construct($tbl, $conn, $_db){
         $this->tblName = $tbl;
         $this->conn = $conn;
         $this->name = $tbl;
+        $this->Db = $_db;
 
-        //$res = $this->get(["*"], "1", "1");
+
         $res = $this->getColumns();
         while($row = mysqli_fetch_assoc($res))
         {       
-            // foreach ($row as $key => $value) {
-                
-            // }    
-            
             $this->columns[] = $row['Field'];
         }
+
+        $res = $this->getPrimaryKeys();
+        while($row = mysqli_fetch_assoc($res))
+        {               
+            $this->primary[] = $row['Column_name'];
+        }
+
+        $res = $this->getAutoIncremented();
+        while($row = mysqli_fetch_assoc($res))
+        {               
+            $this->auto_incremented[] = $row['COLUMN_NAME'];
+        }
+
+        // print_r($this->primary);
+        // print_r($this->auto_incremented);
 
         $this->showColumns = $this->columns;
     }
 
+    public static function getForeignKeys($conn, $DB)
+    {
+        $sql = "SELECT TABLE_NAME, COLUMN_NAME, CONSTRAINT_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_SCHEMA = '$DB';";
+        $resp = mysqli_query($conn, $sql);         
+        return $resp;
+    }
+
+    public function getPrimaryKeys()
+    {       
+        $sql = "SHOW KEYS FROM $this->tblName WHERE Key_name = 'PRIMARY'";
+        $resp = mysqli_query($this->conn, $sql);         
+        return $resp;
+    }
+
+    public function getAutoIncremented()
+    {       
+        $sql = "SELECT * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='$this->tblName' and EXTRA like '%auto_increment%';";
+        $resp = mysqli_query($this->conn, $sql);         
+        return $resp;
+    }
+
+    public function isPrimary($col)
+    {
+        return in_array($col, $this->primary);
+    }
+    
+    public function isAutoInc($col)
+    {
+        return in_array($col, $this->auto_incremented);
+    }
 
     public function getColumnType($col)
     {       
@@ -44,8 +105,14 @@ class Table{
 
     public static function getDBs($conn){
         $resp = mysqli_query($conn, "SHOW DATABASES");
+        $DBs = [];
+
+        while($row = mysqli_fetch_assoc($resp))
+        {
+            $DBs[] = $row['Database'];
+        }
             
-        return $resp;
+        return $DBs;
     }
 
     public static function getDB($conn){
@@ -60,6 +127,18 @@ class Table{
         return $resp;
     }
 
+    public function count(){
+        $resp = mysqli_query($this->conn, "SELECT COUNT(*) as count FROM $this->tblName");
+            
+        if($res = mysqli_fetch_assoc($resp))
+        {
+            return $res['count'];
+        }
+        else {
+            return 0;
+        }
+    }
+
 
     public function makeLinks($_linkedTbls, $_links, $_linksTo)
     {
@@ -71,10 +150,13 @@ class Table{
 
     public function makeLink($linkedTbl, $link, $linkTo)
     {
-        if(in_array($link, $this->columns) && in_array($linkTo, $linkedTbl->columns))
+        if(in_array($link, $this->columns) && inArray($linkTo, $linkedTbl->columns))
         {
             // echo $linkedTbl->tblName;
-            $this->links[$linkedTbl->tblName] = new Link($linkedTbl, $link, $linkTo);        
+            $this->links[$linkedTbl->tblName] = new Link($linkedTbl, $link, $linkTo);       
+        }
+        else {
+            //echo "Cant LINK:".in_array($link, $this->columns).", LOOKING FOR: ".$linkTo.", IN: ". implode(", ",$linkedTbl->columns)."<br><br><br>";
         }
     }
 
@@ -114,7 +196,7 @@ class Table{
     }
 
 
-    public function getAllLinked($columns, $filter = "1", $limit = "0, 1000000")
+    public function getAllLinked($columns, $filter = "1",  int $offset = 0, int $limit = 1000)
     {
         $linked = [$this->tblName];
         $join = "";
@@ -122,21 +204,28 @@ class Table{
 
         foreach ($columns as $key => $col) {
 
-            if(strpos($col, "*") !== FALSE)
+            if(contains($col, "*") !== FALSE)
             {
-                $sql .= "$this->tblName.$col, ";
+                //$sql .= "$this->tblName.$col, ";
+
+                foreach ($this->columns as $c) {
+
+                    $sql .= "$this->tblName.$c AS '$this->tblName.$c', ";
+                }
 
                 foreach ($this->links as $tbl => $lk) {
 
                     foreach ($lk->linkedTbl->columns as $key => $value) {
-                        $sql .= "$tbl.$value AS '$tbl.$value', ";
+                        $t = mysqli_real_escape_string($this->conn, $tbl);
+                        $v = mysqli_real_escape_string($this->conn, $value);
+                        $sql .= "$t.$v AS '$t.$v', ";
                     }
- 
+
                     if(!in_array($tbl, $linked))
                     {
-                        list($tbl, $jn) = $this->findJoin($tbl);
-                        $join .= $jn;
-                        $linked[] = $tbl;
+                         list($tbl, $jn) = $this->findJoin($tbl);
+                         $join .= $jn;
+                         $linked[] = $tbl;
                     }
                     
                 }
@@ -148,24 +237,24 @@ class Table{
 
                 $tbl = $this->findColumnTable($col);
                 $skip = false;
-                if(strpos($col, ":"))
+                if(contains($col, "::"))
                 {                
-                    list($tbl, $col) = explode(":", $col);
-                    $skip = true;                          
+                    list($tbl, $col) = explode("::", $col);
+                    //$skip = true;                          
                 }
-                else if(strpos($col, "."))
+                else if(contains($col, ":"))
                 {
-                    list($tbl, $col) = explode(".", $col);            
-                }
-                else if(strpos($col, "_"))
-                {                  
-                    list($tbl, $col) = explode("_", $col);                          
+                    list($tbl, $col) = explode(":", $col);            
                 }
 
                 
                 if($skip === false)
                 {
-                    $sql .= "$tbl.$col AS '$tbl.$col', ";
+                    // $sql .= "$tbl.$col AS '$tbl.$col', ";
+                    $t = mysqli_real_escape_string($this->conn, $tbl);
+                    $v = mysqli_real_escape_string($this->conn, $col);
+                    $sql .= "$t.$v AS '$t.$v', ";
+
                 }
 
                if(!in_array($tbl, $linked))
@@ -186,7 +275,7 @@ class Table{
 
         $sql .= $join;      
         
-        $sql .= " WHERE $filter LIMIT $limit";
+        $sql .= " WHERE $filter LIMIT $offset, $limit";
 
         //echo $sql."<br>";
     
@@ -204,7 +293,7 @@ class Table{
         if(array_key_exists($tbl, $this->links))
         {
             $ln = $this->links[$tbl];
-            $join = " JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
+            $join = " LEFT JOIN ".$tbl." ON $this->tblName.".$ln->link." = ".$tbl.".".$ln->linksTo;
             $addLink = $tbl;
         }
         else {
@@ -243,26 +332,83 @@ class Table{
         }
     }
 
-    public static function makeTreeView(array $structure, &$html)
+    public function makeStructure()
     {
-        $prev = "";
+        $structure = [];
+
+        foreach ($this->columns as $key) {
+
+            $isLinked = $this->isLinked($key);
+
+            if($isLinked === false)
+            {
+                $structure[$key] = $this->tblName; 
+            }
+            else {
+
+                $table = $this->links[$isLinked]->linkedTbl;
+                $structure[$key] = $table->makeStructure();
+                          
+            }
+        }
+
+        return $structure;
+    }
+
+    public function hasColumn($col)
+    {
+        foreach ($this->columns as $value) {
+            if(strtolower($value) == strtolower($col))
+                return $value;
+        }
+
+        return false;
+    }
+
+    public function makeTreeView(/* &$html,  */array $structure = [])
+    {
+        $html = "";
+
+        if(count($structure) == 0)
+            $structure = $this->makeStructure();
+
         foreach ($structure as $key => $value) {
-            
+
             if(!is_array($value))
             {
-                $html .= "<li class=\"chkBox\" style=\"white-space:nowrap;\"><input type=\"checkbox\" name=\"$value.$key\" id=\"$value.$key\" checked/>$key</li> ";
+                $html .= "<li class=\"chkBox\" style=\"white-space:nowrap;\">";
+
+                $html .= "<input type=\"checkbox\" name=\"$value:$key\" id=\"$value:$key\" checked/>";
+                if($this->isPrimary($key))                
+                    $html .= "<img class=\"autoInc\" src=\"assets/img/key2.png\" title=\"Primární klíč\"/>";              
+                else 
+                    $html .= "<img class=\"autoInc\" />";
+                
+                $html .= "$key</li> ";
                 $prev = $value;
             }
             else {
+
+                $isLinked = $this->isLinked($key);
+                $table = $this->links[$isLinked]->linkedTbl;
+
                 $html .=  "<li class=\"nest\">";
                 // form=\"dummy\"
-                $html .=  "<span class=\"caret\"><input type=\"checkbox\" name=\"$prev:$key\" id=\"$prev:$key\" checked  />$key</span>";
+                $html .=  "<span class=\"caret\"><input type=\"checkbox\" name=\"$this->tblName::$key\" id=\"$this->tblName::$key\" checked  />";
+                if($this->isPrimary($key))                
+                    $html .= "<img class=\"autoInc\" src=\"assets/img/key2.png\" title=\"Primární klíč\"/>";              
+                else 
+                    $html .= "<img class=\"autoInc\" />";
+
+                $html .= "$key</span>";
                 $html .=  "<ul class=\"nested\">";
-                Table::makeTreeView($value, $html);
+                $html .= $table->makeTreeView(/* $html,  */$value);
                 $html .=  "</ul></li>";
             }
              
         }
+
+        return $html;
     }
 
 
@@ -288,42 +434,88 @@ class Table{
         }
     }
 
-    public function delete($id)
+    public function delete($cols)
     {
-        $sql = "DELETE FROM $this->tblName WHERE id=$id ";
+        $sql = "DELETE FROM $this->tblName WHERE ";
+
+        foreach ($cols as $key => $value) {
+            $sql .= mysqli_real_escape_string($this->conn, $key)." = '".mysqli_real_escape_string($this->conn, $value)."' AND ";
+        }
+        $sql .= "1";
         $res =  mysqli_query($this->conn, $sql);
+
+        if(!$res)
+            echo "Error - ".mysqli_error($this->conn);
     }
 
     public function add($data)
     {
         header('Content-Type: text/html; charset=utf-8');
         $sql = "INSERT INTO $this->tblName(";
-        $sql .= implode(", ", $this->columns);
-        $sql = str_replace("id, ", "", $sql);
-        $sql = rtrim($sql, ",");
+
+
+        foreach ($this->columns as $key => $value) {
+            if( strtolower($value) != "id")
+                $sql .= $value.", ";
+        }
+
+        $sql = rtrim($sql, ", ");
         $sql .= ") VALUES (";
 
         foreach ($this->columns as $key => $value) {
-            if($value != "id")
-            $sql .=  (isset($data[$value]) ? "'".$data[$value]."'" : "NULL").", ";
+            if(strtolower($value) != "id")
+                $sql .=  (isset($data[$value]) ? "'".mysqli_real_escape_string($this->conn, $data[$value])."'" : "NULL").", ";
         }
         $sql = rtrim($sql, ", ");
         $sql .= ")";
 
-        // echo $sql;
+         //echo $sql;
 
         mysqli_set_charset($this->conn, "utf8");
         mysqli_query($this->conn, "SET NAMES 'utf8'");
         mysqli_query($this->conn, "SET CHARACTER SET 'utf8'");
         $res = mysqli_query($this->conn, $sql);
 
+        //echo $sql;
+
         if($res)
             echo "Položka přidána.";
         else 
-            echo "Error - Položka nebyla přidáná. Zkuste to prosím znovu.";
+            echo "Error - Položka nebyla přidáná. Zkuste to prosím znovu.<br><br>".mysqli_error($this->conn);
+    }
+
+    public function edit($data)
+    {
+        header('Content-Type: text/html; charset=utf-8');
+        $sql = "UPDATE $this->tblName SET ";
+
+        foreach ($this->columns as $key => $value) {
+
+                $sql .= mysqli_real_escape_string($this->conn, $value)." = ".  (isset($data[$value]) ? "'".mysqli_real_escape_string($this->conn, $data[$value])."'" : "NULL").", ";
+        }
+        $sql = rtrim($sql, ", ");
+        $sql .= " WHERE ";
+
+        foreach ($this->primary as $value) {
+            $sql .= "$value = ".  (isset($data["$value-old"]) ? "'".mysqli_real_escape_string($this->conn, $data["$value-old"])."'" : "NULL")." AND ";
+        }
+
+        $sql .= " 1 ";
+
+        //echo $sql;
+
+        mysqli_set_charset($this->conn, "utf8");
+        mysqli_query($this->conn, "SET NAMES 'utf8'");
+        mysqli_query($this->conn, "SET CHARACTER SET 'utf8'");
+        $res = mysqli_query($this->conn, $sql);
+
+        //echo $sql;
+
+        if($res)
+            echo "Položka upravena.";
+        else 
+            echo "Error - Položka nebyla upravena. Zkuste to prosím znovu.<br><br>".mysqli_error($this->conn);
     }
 
 }
-
-// Elektrikář - slaboproudá a silnoproudá zařízení
 ?>

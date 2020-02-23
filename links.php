@@ -1,5 +1,27 @@
 <?php
-require_once "DB.php";
+
+require_once (dirname(__FILE__)."/Table.php");
+
+error_reporting(E_ERROR);
+
+if(session_status() !== PHP_SESSION_ACTIVE)
+session_start();
+    
+$ini = parse_ini_file('config.ini');
+
+$host = /* $ini['db_host'] */ $_SESSION['host'];
+$user = /* $ini['db_user'] */ $_SESSION['user'];
+$pass = /* $ini['db_pass'] */ $_SESSION['pass'];
+$port = /* $ini['db_port'] */ $_SESSION['port'];
+
+
+
+$DB = isset($_SESSION["DB"]) ? $_SESSION["DB"] : "";
+
+
+$tables = [];
+
+$conn = mysqli_connect($host, $user, $pass, $DB, $port);
 
 if($conn)
 {
@@ -10,37 +32,51 @@ if($conn)
     mysqli_query($conn, "SET character_set_results = 'utf8', character_set_client = 'utf8', character_set_connection = 'utf8', character_set_database = 'utf8', character_set_server = 'utf8'");
 
 }
+else {
+    echo "Problem connecting to Mysql";
+}
 
-require_once "./Table.php";
+if(!isset($_SESSION['DB']) || $_SESSION['DB'] == "")
+{
 
+    $_SESSION['DB'] = reset(Table::getDBs($conn));
+    unset($_SESSION['table']);
+    header('Location: .');
 
-if(session_status() !== PHP_SESSION_ACTIVE)
-session_start();
-
-
-
-
-$ucitel = new Table("ucitele", $conn);
-$ucitel->name = "Učitel";
-$ucitel->showColumns = ['jmeno', 'prijmeni'];
-
-$obor = new Table("obor", $conn);
-$obor->showColumns = [/* 'zkratka', 'nazev',  */'popis'];
-$obor->name = "Obor";
-
-$tridy = new Table("tridy", $conn);
-$tridy->showColumns = ['nazev', 'zacatek'];
-$tridy->makeLink($ucitel, "ucitel", "id");
-$tridy->name = "Třída";
-
-$zak = new Table("zak", $conn);
-$zak->makeLink($tridy, "trida", "id");
-$zak->makeLink($obor, "obor", "id");
-$zak->name = "Žák";
-
-$tables = ['ucitele' => $ucitel, 'obor' =>  $obor, 'tridy' =>  $tridy, 'zak' =>  $zak];
-
-$table = isset($_SESSION["table"]) ? $tables[$_SESSION["table"]] : $zak;
+}
 
 
+if(isset($_SESSION['DB']) && $_SESSION['DB'] != "")
+{
+
+    foreach (Table::getTables($conn) as $val) {
+        $value = end($val);
+        $tables[$value] = new Table($value, $conn, $DB);
+    }
+
+    $res = Table::getForeignKeys($conn, $DB);
+        
+    while($row = mysqli_fetch_assoc($res))
+    {
+        // echo $row['TABLE_NAME'].", ".$row['REFERENCED_TABLE_NAME'].", ".  $row['COLUMN_NAME'].", ". $row['REFERENCED_COLUMN_NAME']."<br>";
+        // echo "LINKING TO: ".$tables[$row['REFERENCED_TABLE_NAME']]->tblName."<BR>";
+        $Tbl = $tables[$row['TABLE_NAME']];
+        $lkTbl = $tables[$row['REFERENCED_TABLE_NAME']];
+
+        $Col = $Tbl->hasColumn($row['COLUMN_NAME']);
+        $lkCol = $lkTbl->hasColumn($row['REFERENCED_COLUMN_NAME']); 
+
+        //($linkedTbl, $link, $linkTo)
+        $Tbl->makeLink($lkTbl, $Col, $lkCol);
+    }
+
+    if(!isset($_SESSION["table"]))
+    {
+        $_SESSION["table"] =  reset($tables)->tblName;
+    }
+
+
+    $table = $tables[$_SESSION["table"]];
+
+}
 

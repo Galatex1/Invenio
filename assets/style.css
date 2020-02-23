@@ -18,7 +18,12 @@ body{
     "left table";
     height: 100vh;
     color: #b1bbc0;
+    background: #193549;
 
+}
+
+#filtering{
+    grid-area: left;
 }
 
 th{
@@ -27,7 +32,7 @@ th{
     border-left: 1px dashed rgb(255, 255, 255); */
     background: #163042;
     color: #ffc600;
-    padding: 7px 5px;
+    padding: 7px 9px;
     text-align: left;
     cursor: pointer;
 }
@@ -44,6 +49,7 @@ th:last-child{
 }
 
 table{
+    table-layout:fixed;
     border-collapse: collapse;
     border-color: white;
     grid-area: table;
@@ -52,22 +58,59 @@ table{
 td{
     border: 1px dashed #163042;
     border-bottom: 1px solid #163042;
-    padding: 3px 5px;
+    padding: 3px 9px;
+    max-width: 400px;
+    overflow: auto;
+    white-space: nowrap;
 }
+
+
 
 tr:nth-child(even) td{
     background: rgba(85, 85, 85, 0.15);
 }
 
 .data-container{
+    grid-area: table;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
     overflow: auto;
     padding: 20px 20px;
-    background: #193549;
+    /* background: url("img/icon.png") no-repeat; */
+    background-size: 100% 100%;
+    background-color: #193549;
     color: white;
 }
+
+.btnsAction{
+    padding: 20px 60px;
+}
+
+
+.btnsAction button{
+    background: #15232d;
+    border: 2px solid #15232d;
+    color: #b1bbc0;
+}
+
+.btnsAction .btn{
+    /* display: block; */
+    justify-self: flex-end;
+    white-space: nowrap;
+    height: 36px;
+    min-width: 200px;
+    margin-bottom: 15px;
+    vertical-align: top;
+}
+
+/* .fullScreen{
+    grid-row: 2/3;
+    grid-column: 1/3;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+} */
 
 .columns{   
     background: #15232d;
@@ -95,14 +138,43 @@ form{
     display: block;
     overflow: auto;
     border-bottom: 1px solid #555; 
-    padding: 20px 0px 20px 20px;
+    /* margin: 20px 20px 20px 20px; */
     box-sizing: border-box;
 }
 
+.form h3{
+    margin-top: 0px;
+    color: #ffc600;
+    text-transform: capitalize;
+    text-transform: full-width;
+}
+
+.form > div{
+    display: inline-block;
+    /* width: 100%;
+    box-sizing: border-box; */
+    margin: 20px 20px 20px 20px;
+}
+
 .filter{
-    padding: 20px;
+    margin: 20px;
     box-sizing: border-box;
     overflow-y: auto;
+}
+
+.max{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    justify-items: flex-start;
+    padding-left: 2px;
+    margin-bottom: 1px;
+}
+
+.max input[type=number]{
+    width: 100%;
+    padding: 7px 10px;
+    height: 32px;
 }
 
 .btns{
@@ -121,7 +193,7 @@ form{
     /* border-bottom: 1px dashed #222; */
 }
 
-a, a:visited{
+a{
     color: #ffc600;
     cursor: pointer;
 }
@@ -140,13 +212,48 @@ header{
     background: #163042;
     box-sizing: border-box;
     border-bottom: 1px solid #0d3a58;
-    grid-template-columns: min-content 1fr min-content min-content min-content min-content min-content;
+    grid-auto-flow: column;
+    grid-auto-columns: min-content;
+    grid-template-columns: min-content 1fr min-content min-content min-content min-content min-content min-content;
+    grid-template-rows: 1fr;
     grid-column-gap: 20px;
+}
+
+header a{
+    color: #b1bbc0;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+header a:hover{
+    color: #b1bbc0;
+    text-decoration: none;
+    white-space: nowrap;
 }
 
 header .btn{
     justify-self: flex-end;
     white-space: nowrap;
+    height: 36px;
+    min-width: 36px;
+    vertical-align: middle;
+}
+
+header select{
+
+    white-space: nowrap;
+    height: 36px;
+    font-size: 1em;
+    text-transform: capitalize;
+    font-weight: bold;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    width: 200px; 
+
+}
+
+select, select option{
+    cursor: pointer;
 }
 
 header h1{
@@ -229,8 +336,23 @@ header .icon{
     font-family: monospace;
 }
 
+.btnQuery span{
+    line-height: 18px;
+    vertical-align: bottom;
+}
+
+.btnQuery img{
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 10px;
+}
+
 .btnFilter{
     width: 100%;
+}
+
+.btnFilter.remove:hover{
+    border-bottom-color: #ff4800;
 }
 
 .fil{
@@ -286,7 +408,7 @@ ul, #main {
   
   /* Create the caret/arrow with a unicode, and style it */
 .caret::before {
-content: /* "\2304"; */ url("arrow.png");
+content: /* "\2304"; */ url("img/arrow.png");
 display: inline-block;
 font-size: 2em;
 margin-right: 6px;
@@ -295,7 +417,7 @@ width: 12px;
   
 /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
 .caret-down::before {
-    content: /* "\2304"; */ url("arrow-down.png");
+    content: /* "\2304"; */ url("img/arrow-down.png");
 
 }
 
@@ -313,23 +435,30 @@ display: block;
  *  SCROLLBAR
  */
 
-.data-container::-webkit-scrollbar-track, .form::-webkit-scrollbar-track, .filter::-webkit-scrollbar-track
+ ::-webkit-scrollbar-track, .data-container::-webkit-scrollbar-track, .form::-webkit-scrollbar-track, .filter::-webkit-scrollbar-track, td::-webkit-scrollbar-track
  {
      /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
      box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
      border-radius: 0px; */
      background-color: rgba(245,245,245,0);
+     cursor: pointer;
  }
  
- .data-container::-webkit-scrollbar, .form::-webkit-scrollbar, .filter::-webkit-scrollbar
+ ::-webkit-scrollbar, .data-container::-webkit-scrollbar, .form::-webkit-scrollbar, .filter::-webkit-scrollbar, td::-webkit-scrollbar
  {
      width: 14px;
      height: 14px;
      background-color: rgba(245,245,245,0);
      cursor: pointer; 
  }
+
+ td::-webkit-scrollbar
+ {
+     width: 7px;
+     height: 7px;
+ }
  
- .data-container::-webkit-scrollbar-thumb, .form::-webkit-scrollbar-thumb, .filter::-webkit-scrollbar-thumb
+ ::-webkit-scrollbar-thumb, .data-container::-webkit-scrollbar-thumb, .form::-webkit-scrollbar-thumb, .filter::-webkit-scrollbar-thumb, td::-webkit-scrollbar-thumb
  {
      border-radius: 0px;
      /* -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
@@ -338,11 +467,13 @@ display: block;
      cursor: pointer;
  }
 
- .data-container::-webkit-scrollbar-thumb:hover, .form::-webkit-scrollbar-thumb:hover, .filter::-webkit-scrollbar-thumb:hover
+ ::-webkit-scrollbar-thumb:hover, .data-container::-webkit-scrollbar-thumb:hover, .form::-webkit-scrollbar-thumb:hover, .filter::-webkit-scrollbar-thumb:hover, td::-webkit-scrollbar-thumb:hover
  {
      background-color: #1b5985;
      cursor: pointer;
  }
+
+ ::-webkit-scrollbar-corner {background: rgba(245,245,245,0); }
 
 
  input[type=text], input[type=number], select, option{
@@ -387,18 +518,21 @@ center[title] span{
 
 .addEdit{
     display: grid;
-    grid-template-rows: repeat(30, min-content);
+    grid-template-rows: min-content;
+    grid-auto-rows: min-content;
     grid-row-gap: 5px;
-    width: 70%;
+    width: 50%;
     margin: auto;
     align-items: center;
+    justify-self: center;
 }
 
 .addEdit span{
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 20px 200px 1fr;
     align-items: center;
     grid-column-gap: 5px;
+    width: 100%;
 }
 
 .addEdit input[type=text], .addEdit input[type=number], .addEdit input[type=email], .addEdit input[type=tel], .addEdit select, .addEdit option{
@@ -408,6 +542,7 @@ center[title] span{
     border-radius: 2px;
     padding: 6px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .addEdit span{
@@ -420,6 +555,11 @@ center[title] span{
     display: block;
     width: 30%;
     justify-self: left;
+}
+
+.btnDark{
+    background: #15232d;
+    border: 2px solid #15232d;
 }
 
 .btnReset{
@@ -435,8 +575,14 @@ center[title] span{
     border-bottom: 2px solid orangered;
 }
 
-#table{
+/* #table{
     font-size: 15px;
+} */
+
+#settingsForm{
+    display: grid;
+    justify-items: center;
+    align-content: flex-start;
 }
 
 .btnNew, .btnSettings{
@@ -445,11 +591,16 @@ center[title] span{
 }
 
 .btnSettings{
-    padding: 3px 5px;
+    padding: 3px 3px;
+    line-height: 1;
+    /* grid-column: grid-column-end; */
+    /* grid-column-end: -1;
+    grid-row: 1/2; */
+    /* grid-row-end: 1; */
 }
 
 .btnSettings img{
-    height: 26px;
+    height: 100%;
     vertical-align: middle;
     
 }
@@ -492,3 +643,109 @@ center[title] span{
     color: #ffc60022
 }
 
+.connection{
+    display: grid;
+    padding: 50px;
+    border: 1px solid #1b5985;
+    background: #193549;
+    border-radius: 3px;
+}
+
+
+
+.connection legend{
+    color: #ffc600;
+    font-weight: bold;
+    font-size: 1.5em;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    background: #163042;
+    border: 1px solid #1b5985;
+    border-radius: 3px;
+    padding: 3px 7px;
+}
+
+.connection input[type=text], .connection input[type=number], .connection input[type=email], .connection input[type=tel], .connection input[type=password], .connection select, .connection option{
+    background: #15232d;
+    color: #ffc600;
+    border: 1px solid #0d3a58;
+    border-radius: 2px;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.connection form{
+    justify-self: center;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 2fr 3fr;
+    grid-row-gap: 5px;
+}
+
+.connection input[type=submit]{
+    grid-column: 1/3;
+    width: 100%;
+    color: #b1bbc0;
+}
+
+
+.autoInc{
+    height: 20px;
+    vertical-align: middle;
+}
+
+
+.loading{
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* background: #15232d; */
+    border-radius: 3px;
+    border: #163042;
+    padding: 10px;
+    display: none;
+}
+
+.loading .spinner{
+    --spinner-size: 50px;
+
+    width: var(--spinner-size);
+    height: var(--spinner-size);
+    border-radius: var(--spinner-size);
+
+    display: inline-block;
+
+    border: 10px solid #1b5985a8;
+    border-bottom: 10px solid #2e93db;
+
+    -webkit-animation:spin 2s linear infinite;
+    -moz-animation:spin 2s linear infinite;
+    animation:spin 2s linear infinite;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+
+/* 
+#1b59856e;
+#1b5985; 
+*/
+
+.settings{
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    width: 50%; 
+    align-items: center;
+    margin: auto;
+    grid-row-gap: 25px;
+}
+
+.settings .btn{
+    /* margin-top: 30px; */
+    width: 100%;
+    grid-column: span 2;
+}
+    

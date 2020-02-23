@@ -6,108 +6,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" href="style.css">
-    <script src="Jquery.js"></script>
-    <script src="script.js"></script>
+    <link rel="stylesheet" href="assets/style.css">
+    <script src="assets/js/Jquery.js"></script>
+    <script src="assets/js/script.js"></script>
     <title>Databáze absolventů</title>
 </head>
 <body>
     
 
     <?php
+    //error_reporting(E_ERROR);
     header('Content-Type: text/html; charset=utf-8');
     session_start();
-    require_once "links.php";
 
-    if(isset($_POST["table"]) && $_POST["table"] != "")
-    {
-        $table = $tables[$_POST["table"]];
-        $_SESSION['table'] = $_POST["table"];
-    }
-
+    if(isset($_SESSION['host']) && $_SESSION['host'] != "")
+        require_once "links.php";
 
     ?>
 
     <header>
         
-        <h1><img class="icon" src="icon.png"> ABSOLVENT</h1>
+        <h1><a href=""><img class="icon" src="assets/img/icon.png">INVENIO</a></h1>
         <h3>MySQL klient by Galatex</h3>
-        <span>
-            <form class="tbls" action="" method="post">
-                <span><!-- Databáze: --><img src="DB.png" alt="Databáze" title="Databáze"></span> 
-                <select name="DB" id="DB" class="DB">
-                    <?php $selected = end(Table::getDB($conn)); print_r(end($selected)); ?>
-                    <?php foreach (Table::getDBs($conn) as $key => $value): ?>                  
-                    <option value="<?php echo end($value); ?>"  <?php echo $selected == end($value) ? "selected" : "disabled";   ?>  ><?php echo end($value); ?></option>
-                    <?php endforeach; ?>
-                    
-                </select>
-            </form>
-        </span>
-        <span>
-            <form class="tbls" id="tbls" action="" method="post">
-                <span><!-- Tabulka:  --><img src="table.png" alt="Tabulka" title="Tabulka"> </span> 
-                <select name="table" id="table" class="table">
-                    
-                    <?php foreach (Table::getTables($conn) as $key => $value): ?>
-                    
-                    <option value="<?php echo end($value); ?>"  <?php echo $table->tblName == end($value) ? "selected" : "";   ?>  ><?php echo $tables[end($value)]->name; ?></option>
-                    <?php endforeach; ?>
-                    
-                </select>
-            </form>
-        </span>
+        <?php
+            if(isset($_SESSION['host']) && $_SESSION['host'] != "")
+                require_once "page/dbSelect.php";
+            
+            if(isset($_SESSION['DB']) && $_SESSION['DB'] != "")
+                require_once "page/tblSelect.php";
+
+            if(isset($_SESSION['DB']) && $_SESSION['DB'] != "")
+                require_once "page/tblButtons.php";
+
+            if(isset($_SESSION['DB']) && $_SESSION['DB'] != "")
+                require_once "page/buttons.php";
+                
+        ?>
         
-        <button class="btn btnNew"> <big>+</big> Nový Záznam</button>
-        <button class="btn btnNapoveda">? Nápověda</button>
-        <button class="btn btnSettings"> <img src="cog.png" alt="Nastavení" title="Nastavení"></button>
     </header>
 
-    <form id="filtering" action="" method="get" style="margin:auto;">
-        <div class="columns">
-            <div class="form">
-                <h3 style="margin-top: 0px;">Sloupce</h3>
-                <ul id="main">
-                <?php
-
-                    $struct = array();
-                    $html = "";
-                    $table->getStructure($struct);
-                    Table::makeTreeView($struct, $html);
-                    echo $html;
-
-                ?>
-                </ul>           
-            </div>
-            <div class="filter">
-                <h3>Filtry</h3>
-
-                <div class="btns">
-                    <button class="btn btnFilter" value="<?php echo (+1) ?>">Přidat Filtr</button>
-                    <button class="btn btnFilter" value="<?php echo (-1) ?>">Odebrat Filtr</button>
-                </div>
-
-            </div>
-            <input class="btn btnSend" type="submit" value="obnovit" name="odeslat">
-        </div>
-    </form>
+    <?php
+    if(isset($_SESSION['table']) && $_SESSION['table'] != "")
+        require_once "page/treeView.php";
+    ?>
 
 
     <div class="data-container">
+        <?php
+        if(!isset($_SESSION['host']) || $_SESSION['host'] == "")
+            require_once "page/connection.php";
+        else {
+            include "page/tblInfo.php";          
+        }
+        ?>
+        
+    
+
         <script>
             $(document).ready(()=>{
-                $('.btnNew').trigger('click');
+                // $('.btnSettings').trigger('click');
             })
         
         </script>
-        <pre>
+        <!-- <pre>
         <?php
         
 
         ?>
-        </pre>
+        </pre> -->
 
     </div>
-
+    <div class="response"></div>
+    <div class="loading"><span class="spinner"></span></div>
 </body>
 </html>
