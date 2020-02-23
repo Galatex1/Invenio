@@ -20,7 +20,7 @@
     session_start();
 
     if(isset($_SESSION['host']) && $_SESSION['host'] != "")
-        require_once "links.php";
+        require_once "links.php"; 
 
     ?>
 
