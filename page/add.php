@@ -67,7 +67,7 @@ require_once "../utils/year.php";
             $lk = $table->links[$isLinked];
             $lkTable = $lk->linkedTbl;
 
-            $res = $lkTable->getAllLinked(["*"]);
+            $res = $lkTable->getAllLinked(["*"], "1", 0, 10000);
             echo "<span>";
 
             if($table->isPrimary($key))
