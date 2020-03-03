@@ -76,6 +76,7 @@
         </pre> -->
 
     </div>
+    <button class="export btn" title="Exportovat data"><img src="assets/img/export.png" alt="Export"></button>
     <div class="response"></div>
     <div class="loading"><span class="spinner"></span></div>
 </body>

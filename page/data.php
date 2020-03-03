@@ -50,7 +50,7 @@ function makeFilters($conn)
 
 foreach ($_POST as $key => $value) {
 
-    if($key != "odeslat" && $key != "delete" && strpos($key, "join-") === false && strpos($key, "column-") === false && strpos($key, "operand-") === false && strpos($key, "value-") === false && strpos($key, "o_r_d_e_r") === false && strpos($key, "l_i_m_i_t") === false)
+    if($key != "odeslat" && $key != "delete" && strpos($key, "join-") === false && strpos($key, "column-") === false && strpos($key, "operand-") === false && strpos($key, "value-") === false && strpos($key, "o_r_d_e_r") === false && strpos($key, "l_i_m_i_t") === false && strpos($key, "e_x_p_o_r_t") === false )
     {
 
 
@@ -66,9 +66,6 @@ $first = true;
 
 $all = [];
 $linkedCols = [];
-
-
-
 
 echo "<table>";
 
@@ -156,5 +153,44 @@ while($row = mysqli_fetch_assoc($res))
 }
 
 echo "</table>";
+
+
+
+if(isset($_POST['e_x_p_o_r_t']))
+{
+
+    $res = $table->getAllLinked($cols,  makeFilters($conn), 0,  $_POST["l_i_m_i_t"] );
+    $filename="../exports/$table->tblName-".date('m-d-Y_hia').'.csv';
+    $file = fopen($filename, "a");
+
+    $output = "";
+
+
+    foreach ($cols as $key) {
+        if(!contains($key, "::"))
+        {
+            $k = str_replace(":", ".", $key);
+            $output .= "$k;";
+        }
+    }
+
+    $output .= "\n";
+    fwrite($file, $output);
+    $output = "";
+      
+    while($row = mysqli_fetch_assoc($res))
+    {  
+        foreach ($row as $key => $value) {
+            if(!isset($linkedCols[$key]))
+                $output .= htmlspecialchars($value).";";
+        }
+        $output .= "\n";
+        fwrite($file, $output);
+    }
+    fclose($file);
+
+    echo "<input id=\"filename\" type=\"hidden\" value=\"./exports/".basename($filename)."\"/>";
+
+}
 
 ?>

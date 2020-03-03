@@ -43,6 +43,40 @@ $(document).ready(function(){
         });
     });
 
+    $('.export').click(function(e){
+        e.preventDefault();
+
+        $(".loading").show();
+
+        var ajaxurl = 'page/data.php',
+        data = $("#filtering").serialize();
+        data += "&e_x_p_o_r_t=true";
+
+        $.post(ajaxurl, data, function (response) {
+            $(".data-container").html(response);
+            $(".loading").hide();
+
+            $.ajax({
+                url: $("#filename").val(),
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function (data) {
+                    var a = document.createElement('a');
+                    var url = window.URL.createObjectURL(data);
+                    a.href = url;
+                    a.download =  $("#filename").val().replace("./exports/", "");
+                    document.body.append(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                }
+            });
+
+        });
+    });
+
     $(document).on('click','.column',function(e){
         e.preventDefault();
 

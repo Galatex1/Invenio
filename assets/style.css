@@ -749,6 +749,21 @@ center[title] span{
     width: 100%;
     grid-column: span 2;
 }
+
+.export{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    transform: translate(-5px, -5px);
+    opacity: 0.15;
+    transition: opacity ease-out 0.5s;
+    border-bottom-width: 4px;
+}
+
+.export:hover{
+    opacity: 1;
+    border-bottom: 4px solid palegreen;
+}
     
 
 
@@ -767,6 +782,12 @@ center[title] span{
 
     .addEdit {
         width: 70%;
+    }
+
+    .btnFilter{
+        font-size: 0.70em;
+        letter-spacing: 0.04em;
+        padding: 7px 7px;
     }
 
 }
