@@ -750,3 +750,123 @@ center[title] span{
     grid-column: span 2;
 }
     
+
+
+@media only screen and (max-width: 1600px)
+{
+
+    header select {
+        width: auto;
+        max-width: 100px;
+    }
+
+    header h3{
+        /* display: none; */
+        font-size: 1em;
+    }
+
+    .addEdit {
+        width: 70%;
+    }
+
+}
+
+
+@media only screen and (max-width: 1350px)
+{
+
+    header select {
+        width: auto;
+        max-width: 100px;
+    }
+
+    header{
+        position: relative;
+    }
+
+    header h3{
+        position: absolute;      
+        bottom: 0;
+        margin: 0;
+        left: 15px;
+        transform: translateY(-2px);
+    }
+
+}
+
+
+@media only screen and (max-width: 1200px)
+{
+
+    header select {
+        width: auto;
+        max-width: 100px;
+    }
+
+    header{
+        position: relative;
+    }
+
+    header h3{
+        position: absolute;      
+        bottom: 0;
+        margin: 0;
+        left: 15px;
+        transform: translateY(-2px);
+    }
+
+    body{
+        font-size: 0.75em;
+        letter-spacing: 0.04em;
+    }
+
+    .btn {
+        font-size: 0.75em;
+        letter-spacing: 0.04em;
+    }
+
+    .addEdit {
+        width: 95%;
+    }
+
+}
+
+
+@media only screen and (max-width: 1000px)
+{
+
+    header select {
+        width: auto;
+        max-width: 100px;
+    }
+
+    header{
+        position: relative;
+        /* overflow: auto; */
+        grid-auto-flow: row;
+        grid-auto-rows: min-content;
+        grid-template-columns: min-content 1fr min-content min-content min-content min-content min-content min-content min-content;
+        grid-template-rows: 1fr;
+        grid-column-gap: 5px;
+        width: 100vw;
+    }
+
+    header h3{
+        position: absolute;      
+        bottom: 0;
+        margin: 0;
+        left: 15px;
+        transform: translateY(-2px);
+    }
+
+    body{
+        font-size: 0.75em;
+        letter-spacing: 0.04em;
+        grid-template-columns: 1fr 4fr;
+    }
+
+    header .btn{
+        padding: 4px;
+    }
+
+}

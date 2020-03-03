@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="assets/style.css">
     <script src="assets/js/Jquery.js"></script>
     <script src="assets/js/script.js"></script>
-    <title>Databáze absolventů</title>
+    <title>Invenio - MySQL Client</title>
 </head>
 <body>
     
