@@ -764,7 +764,71 @@ center[title] span{
     opacity: 1;
     border-bottom: 4px solid palegreen;
 }
+
+.expSelect{
+    background: #15232d;
+    border: 2px solid #122738;
+    /* border-bottom: 4px solid palegreen; */
+    border-radius: 4px;
+    padding: 20px 50px 40px 50px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+}
+
+.expSelect form{
+    display: grid;
+    justify-items: center;
+}
+
+.expSelect input, .expSelect label{
+    vertical-align: middle;
+    font-size: 1.3em;
+}
+
+.expSelect .btn{
+    margin-top: 15px;
+    width: 100%;
+}
+
+.closeCross{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    height: 20px;    
+    cursor: pointer;
+}
+
+.line{
+    display: block;
+    background: #b1bbc0;
+    height: 3px;
+    width: 20px;
+    position: relative;
+    top: 5px;
+    cursor: pointer;
+}
+
+.line.I{
+    transform: rotate(45deg);
+
+    top: 8px;
+}
+
+.line.II{
+    transform: rotate(-45deg);
+}
+
+.closeCross:hover .line{
+    background: #ffc600;
+}
     
+
+.lblOne{
+    margin-right: 20px;
+}
 
 
 @media only screen and (max-width: 1600px)

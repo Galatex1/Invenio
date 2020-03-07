@@ -77,6 +77,17 @@
 
     </div>
     <button class="export btn" title="Exportovat data"><img src="assets/img/export.png" alt="Export"></button>
+    <div class="expSelect">
+        <h1>Exportovat data</h1>
+        <form id="expSel">
+            <span><input type="radio" name="e_x_p_o_r_t" id="xml" value="xml" checked><label class="lblOne" for="xml">XML</label><input type="radio" name="e_x_p_o_r_t" id="csv" value="csv"><label for="csv">CSV</label></span>
+            <input class="btn btnExport" type="submit" value="Exportovat">
+        </form>
+        <div class="closeCross">
+            <span class="line I"></span>
+            <span class="line II"></span>
+        </div>
+    </div>
     <div class="response"></div>
     <div class="loading"><span class="spinner"></span></div>
 </body>

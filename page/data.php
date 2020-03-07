@@ -158,38 +158,73 @@ echo "</table>";
 
 if(isset($_POST['e_x_p_o_r_t']))
 {
+    if($_POST['e_x_p_o_r_t'] == 'xml')
+    {
+        $res = $table->getAllLinked($cols,  makeFilters($conn), 0,  $_POST["l_i_m_i_t"] );
+        $filename="../exports/$table->tblName-".date('m-d-Y_hia').'.xml';
+        $file = fopen($filename, "w");
 
-    $res = $table->getAllLinked($cols,  makeFilters($conn), 0,  $_POST["l_i_m_i_t"] );
-    $filename="../exports/$table->tblName-".date('m-d-Y_hia').'.csv';
-    $file = fopen($filename, "a");
-
-    $output = "";
-
-
-    foreach ($cols as $key) {
-        if(!contains($key, "::"))
-        {
-            $k = str_replace(":", ".", $key);
-            $output .= "$k;";
+        $output = "<?xml version=\"1.0\" encoding=\"utf-8\"?><data>";
+        fwrite($file, $output);
+        
+        while($row = mysqli_fetch_assoc($res))
+        {  
+            $output = "<$table->tblName>";
+            fwrite($file, $output);
+            foreach ($row as $key => $value) {
+                if(!isset($linkedCols[$key]))
+                {                    
+                    $output = "<$key>".htmlspecialchars($value)."</$key>";
+                    fwrite($file, $output);
+                }
+            }
+            $output = "</$table->tblName>";
+            fwrite($file, $output);
+            // 
         }
+
+        $output = "</data>";
+
+        fwrite($file, $output);
+        fclose($file);
+
+        echo "<input id=\"filename\" type=\"hidden\" value=\"./exports/".basename($filename)."\"/>";
     }
+    else {     
+    
+        $res = $table->getAllLinked($cols,  makeFilters($conn), 0,  $_POST["l_i_m_i_t"] );
+        $filename="../exports/$table->tblName-".date('m-d-Y_hia').'.csv';
+        $file = fopen($filename, "w");
 
-    $output .= "\n";
-    fwrite($file, $output);
-    $output = "";
-      
-    while($row = mysqli_fetch_assoc($res))
-    {  
-        foreach ($row as $key => $value) {
-            if(!isset($linkedCols[$key]))
-                $output .= htmlspecialchars($value).";";
+        $output = "";
+
+
+        foreach ($cols as $key) {
+            if(!contains($key, "::"))
+            {
+                $k = str_replace(":", ".", $key);
+                $output .= "$k;";
+            }
         }
+
         $output .= "\n";
         fwrite($file, $output);
-    }
-    fclose($file);
+        
+        
+        while($row = mysqli_fetch_assoc($res))
+        {  
+            $output = "";
+            foreach ($row as $key => $value) {
+                if(!isset($linkedCols[$key]))
+                    $output .= htmlspecialchars($value).";";
+            }
+            $output .= "\n";
+            fwrite($file, $output);
+        }
+        fclose($file);
 
-    echo "<input id=\"filename\" type=\"hidden\" value=\"./exports/".basename($filename)."\"/>";
+        echo "<input id=\"filename\" type=\"hidden\" value=\"./exports/".basename($filename)."\"/>";
+    }
 
 }
 
